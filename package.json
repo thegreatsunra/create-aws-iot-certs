@@ -1,7 +1,7 @@
 {
   "name": "create-aws-iot-certs",
   "description": "Auto-generate all the certs for connecting to your AWS IoT instance",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "homepage": "https://github.com/thegreatsunra/create-aws-iot-certs",
   "repository": {
     "type": "git",
