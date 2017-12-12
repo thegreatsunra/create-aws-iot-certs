@@ -1,48 +1,62 @@
 const aws = require('aws-sdk')
-const https = require('https')
+const config = require('./config')
+const download = require('./download')
 const fs = require('fs')
 const path = require('path')
+const random = require('./random')
 
-aws.config.update({ region: 'us-west-2' })
+aws.config.update({ region: config.region })
 const iot = new aws.Iot()
 
-const certPath = './cert'
-const rootCAUrl = 'https://www.symantec.com/content/en/us/enterprise/verisign/roots/VeriSign-Class%203-Public-Primary-Certification-Authority-G5.pem'
-const params = {
-  setAsActive: true
-}
-
-iot.createKeysAndCertificate(params, (err, data) => {
-  if (err) {
-    console.log(err, err.stack)
-  } else {
-    console.log(data)
-    privateKeyStream.write(data.keyPair.PrivateKey)
+async function createAndAssignCerts () {
+  let certData = {}
+  let thingData = {}
+  try {
+    const createCertParams = {
+      setAsActive: config.setNewCertAsActive
+    }
+    certData = await iot.createKeysAndCertificate(createCertParams).promise()
+    const privateKeyStream = fs.createWriteStream(path.resolve(__dirname, `${config.certPath}/${config.privateKeyFile}`))
+    const publicKeyStream = fs.createWriteStream(path.resolve(__dirname, `${config.certPath}/${config.publicKeyFile}`))
+    const certificateStream = fs.createWriteStream(path.resolve(__dirname, `${config.certPath}/${config.certificateKeyFile}`))
+    privateKeyStream.write(certData.keyPair.PrivateKey)
     privateKeyStream.end()
-
-    publicKeyStream.write(data.keyPair.PublicKey)
+    publicKeyStream.write(certData.keyPair.PublicKey)
     publicKeyStream.end()
-
-    certificateStream.write(data.certificatePem)
+    certificateStream.write(certData.certificatePem)
     certificateStream.end()
+  } catch (err) {
+    console.log('error', err)
   }
-})
-
-const privateKeyStream = fs.createWriteStream(path.resolve(__dirname, `${certPath}/private.pem.key`))
-const publicKeyStream = fs.createWriteStream(path.resolve(__dirname, `${certPath}/public.pem.key`))
-const certificateStream = fs.createWriteStream(path.resolve(__dirname, `${certPath}/certificate.pem.crt`))
-
-const download = (url, dest, cb) => {
-  const file = fs.createWriteStream(dest)
-  const request = https.get(url, (response) => { // eslint-disable-line no-unused-vars
-    response.pipe(file)
-    file.on('finish', () => {
-      file.close(cb) // close() is async, call cb after close completes.
-    })
-  }).on('error', (err) => { // Handle errors
-    fs.unlink(dest) // Delete the file async. (But we don't check the result)
-    if (cb) cb(err.message)
-  })
+  try {
+    const createThingParams = {
+      thingName: `${random.createString(8, 'lowercasenumbers')}`,
+      thingTypeName: config.thingTypeName
+    }
+    thingData = await iot.createThing(createThingParams).promise()
+  } catch (err) {
+    console.log('error', err)
+  }
+  try {
+    const attachPolicyParams = {
+      policyName: config.policyName,
+      target: certData.certificateArn
+    }
+    iot.attachPolicy(attachPolicyParams).promise()
+  } catch (err) {
+    console.log('error', err)
+  }
+  try {
+    const attachThingPrincipalParams = {
+      principal: certData.certificateArn,
+      thingName: thingData.thingName
+    }
+    await iot.attachThingPrincipal(attachThingPrincipalParams).promise()
+  } catch (err) {
+    console.log('error', err)
+  }
 }
 
-download(rootCAUrl, `${certPath}/root-CA.pem`)
+createAndAssignCerts()
+
+download(config.rootCAUrl, `${config.certPath}/${config.rootCAFile}`)
