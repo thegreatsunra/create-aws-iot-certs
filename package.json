@@ -1,7 +1,7 @@
 {
   "name": "create-aws-iot-certs",
   "description": "Auto-generate all the certs for connecting to your AWS IoT instance",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "homepage": "https://github.com/thegreatsunra/create-aws-iot-certs",
   "repository": {
     "type": "git",
@@ -22,6 +22,23 @@
   "engines": {
     "node": "^8.0.0",
     "npm": "^5.0.0"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.168.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.0.3",
+    "eslint": "^4.13.1",
+    "eslint-config-standard": "^11.0.0-beta.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1"
+  },
+  "scripts": {
+    "lint": "eslint --ext .js --fix ./",
+    "lint:fix": "npm run lint",
+    "start": "node ./index.js"
   },
   "main": "index.js"
 }
