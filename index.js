@@ -37,6 +37,15 @@ async function createAndAssignCerts () {
   } catch (err) {
     console.log('error', err)
   }
+  try {
+    const attachPolicyParams = {
+      policyName: config.policyName,
+      target: certData.certificateArn
+    }
+    iot.attachPolicy(attachPolicyParams).promise()
+  } catch (err) {
+    console.log('error', err)
+  }
   }
 }
 
