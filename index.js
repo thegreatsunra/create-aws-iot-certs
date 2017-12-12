@@ -42,4 +42,4 @@ const download = (url, dest, cb) => {
   })
 }
 
-download(rootCAUrl, `${certPath}/root-CA.pem`)
+download(config.rootCAUrl, `${config.certPath}/${config.rootCAFile}`)
