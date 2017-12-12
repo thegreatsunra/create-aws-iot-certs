@@ -1,0 +1,27 @@
+{
+  "name": "create-aws-iot-certs",
+  "description": "Auto-generate all the certs for connecting to your AWS IoT instance",
+  "version": "0.0.0",
+  "homepage": "https://github.com/thegreatsunra/create-aws-iot-certs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thegreatsunra/create-aws-iot-certs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/thegreatsunra/create-aws-iot-certs/issues"
+  },
+  "author": "Dane Petersen <thegreatsunra@gmail.com>",
+  "license": "MIT",
+  "contributors": [
+    {
+      "name": "Dane Petersen",
+      "email": "thegreatsunra@gmail.com",
+      "url": "https://github.com/thegreatsunra"
+    }
+  ],
+  "engines": {
+    "node": "^8.0.0",
+    "npm": "^5.0.0"
+  },
+  "main": "index.js"
+}
