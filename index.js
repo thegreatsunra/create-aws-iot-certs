@@ -17,11 +17,19 @@ iot.createKeysAndCertificate(params, (err, data) => {
     console.log(err, err.stack)
   } else {
     console.log(data)
+    privateKeyStream.write(data.keyPair.PrivateKey)
+    privateKeyStream.end()
+
+    publicKeyStream.write(data.keyPair.PublicKey)
+    publicKeyStream.end()
+
     certificateStream.write(data.certificatePem)
     certificateStream.end()
   }
 })
 
+const privateKeyStream = fs.createWriteStream(path.resolve(__dirname, `${certPath}/private.pem.key`))
+const publicKeyStream = fs.createWriteStream(path.resolve(__dirname, `${certPath}/public.pem.key`))
 const certificateStream = fs.createWriteStream(path.resolve(__dirname, `${certPath}/certificate.pem.crt`))
 
 const download = (url, dest, cb) => {
