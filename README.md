@@ -1,6 +1,6 @@
 # create-aws-iot-certs
 
-> Auto-generate all the certs for connecting to your AWS IoT instance
+> Automatically create and associate things, policies, and certs in AWS IoT
 
 ## Getting started
 
