@@ -1,16 +1,13 @@
 const aws = require('aws-sdk')
-const https = require('https')
+const config = require('./config')
+const download = require('./download')
 const fs = require('fs')
 const path = require('path')
+const random = require('./random')
 
-aws.config.update({ region: 'us-west-2' })
+aws.config.update({ region: config.region })
 const iot = new aws.Iot()
 
-const certPath = './cert'
-const rootCAUrl = 'https://www.symantec.com/content/en/us/enterprise/verisign/roots/VeriSign-Class%203-Public-Primary-Certification-Authority-G5.pem'
-const params = {
-  setAsActive: true
-}
 
 iot.createKeysAndCertificate(params, (err, data) => {
   if (err) {
