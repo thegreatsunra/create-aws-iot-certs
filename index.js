@@ -3,6 +3,9 @@ const https = require('https')
 const fs = require('fs')
 aws.config.update({ region: 'us-west-2' })
 const iot = new aws.Iot()
+
+const certPath = './cert'
+const rootCAUrl = 'https://www.symantec.com/content/en/us/enterprise/verisign/roots/VeriSign-Class%203-Public-Primary-Certification-Authority-G5.pem'
 const params = {
   setAsActive: true
 }
@@ -28,3 +31,4 @@ const download = (url, dest, cb) => {
   })
 }
 
+download(rootCAUrl, `${certPath}/root-CA.pem`)

@@ -1,6 +1,7 @@
 !.gitkeep
 .#*
 .DS_Store
+cert
 node_modules/**
 thumbs.db
 *.log*
