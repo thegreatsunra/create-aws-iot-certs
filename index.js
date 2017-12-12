@@ -10,6 +10,7 @@ const iot = new aws.Iot()
 
 async function createAndAssignCerts () {
   let certData = {}
+  let thingData = {}
   try {
     const createCertParams = {
       setAsActive: config.setNewCertAsActive
@@ -24,6 +25,15 @@ async function createAndAssignCerts () {
     publicKeyStream.end()
     certificateStream.write(certData.certificatePem)
     certificateStream.end()
+  } catch (err) {
+    console.log('error', err)
+  }
+  try {
+    const createThingParams = {
+      thingName: `${random.createString(8, 'lowercasenumbers')}`,
+      thingTypeName: config.thingTypeName
+    }
+    thingData = await iot.createThing(createThingParams).promise()
   } catch (err) {
     console.log('error', err)
   }
