@@ -1,6 +1,8 @@
 const aws = require('aws-sdk')
 const https = require('https')
 const fs = require('fs')
+const path = require('path')
+
 aws.config.update({ region: 'us-west-2' })
 const iot = new aws.Iot()
 
@@ -15,8 +17,12 @@ iot.createKeysAndCertificate(params, (err, data) => {
     console.log(err, err.stack)
   } else {
     console.log(data)
+    certificateStream.write(data.certificatePem)
+    certificateStream.end()
   }
 })
+
+const certificateStream = fs.createWriteStream(path.resolve(__dirname, `${certPath}/certificate.pem.crt`))
 
 const download = (url, dest, cb) => {
   const file = fs.createWriteStream(dest)
