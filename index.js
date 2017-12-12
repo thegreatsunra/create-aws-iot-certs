@@ -46,6 +46,14 @@ async function createAndAssignCerts () {
   } catch (err) {
     console.log('error', err)
   }
+  try {
+    const attachThingPrincipalParams = {
+      principal: certData.certificateArn,
+      thingName: thingData.thingName
+    }
+    await iot.attachThingPrincipal(attachThingPrincipalParams).promise()
+  } catch (err) {
+    console.log('error', err)
   }
 }
 
