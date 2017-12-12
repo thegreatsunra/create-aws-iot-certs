@@ -24,7 +24,8 @@
     "npm": "^5.0.0"
   },
   "dependencies": {
-    "aws-sdk": "^2.168.0"
+    "aws-sdk": "^2.168.0",
+    "nanoid": "^1.0.1"
   },
   "devDependencies": {
     "babel-eslint": "^8.0.3",
