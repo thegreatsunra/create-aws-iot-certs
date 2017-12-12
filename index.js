@@ -8,26 +8,26 @@ const random = require('./random')
 aws.config.update({ region: config.region })
 const iot = new aws.Iot()
 
-
-iot.createKeysAndCertificate(params, (err, data) => {
-  if (err) {
-    console.log(err, err.stack)
-  } else {
-    console.log(data)
-    privateKeyStream.write(data.keyPair.PrivateKey)
+async function createAndAssignCerts () {
+  let certData = {}
+  try {
+    const createCertParams = {
+      setAsActive: config.setNewCertAsActive
+    }
+    certData = await iot.createKeysAndCertificate(createCertParams).promise()
+    const privateKeyStream = fs.createWriteStream(path.resolve(__dirname, `${config.certPath}/${config.privateKeyFile}`))
+    const publicKeyStream = fs.createWriteStream(path.resolve(__dirname, `${config.certPath}/${config.publicKeyFile}`))
+    const certificateStream = fs.createWriteStream(path.resolve(__dirname, `${config.certPath}/${config.certificateKeyFile}`))
+    privateKeyStream.write(certData.keyPair.PrivateKey)
     privateKeyStream.end()
-
-    publicKeyStream.write(data.keyPair.PublicKey)
+    publicKeyStream.write(certData.keyPair.PublicKey)
     publicKeyStream.end()
-
-    certificateStream.write(data.certificatePem)
+    certificateStream.write(certData.certificatePem)
     certificateStream.end()
+  } catch (err) {
+    console.log('error', err)
   }
-})
-
-const privateKeyStream = fs.createWriteStream(path.resolve(__dirname, `${certPath}/private.pem.key`))
-const publicKeyStream = fs.createWriteStream(path.resolve(__dirname, `${certPath}/public.pem.key`))
-const certificateStream = fs.createWriteStream(path.resolve(__dirname, `${certPath}/certificate.pem.crt`))
+  }
 
 const download = (url, dest, cb) => {
   const file = fs.createWriteStream(dest)
@@ -41,5 +41,7 @@ const download = (url, dest, cb) => {
     if (cb) cb(err.message)
   })
 }
+
+createAndAssignCerts()
 
 download(config.rootCAUrl, `${config.certPath}/${config.rootCAFile}`)
